@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>චැට් යෙදුම</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="sidebar">
+        <h2>චැට් කාමරය</h2>
+        <div id="users">
+            <h3>පරිශීලකයන්</h3>
+            <!-- පරිශීලකයන් ලැයිස්තුව මෙතැන පෙන්වනු ඇත -->
+        </div>
+    </div>
+    
+    <div id="chat-area">
+        <div id="messages">
+            <!-- පණිවිඩ මෙතැන පෙන්වනු ඇත -->
+        </div>
+        
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="පණිවිඩය ඇතුළත් කරන්න...">
+            <button id="send-button">යවන්න</button>
+            <button id="photo-button">පින්තූරය</button>
+            <button id="video-button">වීඩියෝ චැට්</button>
+            <input type="file" id="file-input" accept="image/*" style="display: none;">
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
