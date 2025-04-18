@@ -6,32 +6,31 @@
     <title>ශ්‍රී චැට් යෙදුම</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --bg-color: #ecf0f1;
-            --sidebar-color: #2c3e50;
-            --text-color: #333;
-            --light-text: #fff;
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
         }
         
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Arial Unicode MS', 'Arial', sans-serif;
+            font-family: 'Arial', 'Arial Unicode MS', sans-serif;
         }
         
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--light);
+            color: var(--text);
             height: 100vh;
             display: flex;
         }
         
         #sidebar {
             width: 250px;
-            background-color: var(--sidebar-color);
-            color: var(--light-text);
+            background-color: var(--primary);
+            color: white;
             padding: 20px;
             overflow-y: auto;
         }
@@ -46,7 +45,7 @@
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background-color: var(--bg-color);
+            background-color: var(--light);
         }
         
         #input-area {
@@ -67,7 +66,7 @@
         
         button {
             padding: 12px 20px;
-            background-color: var(--primary-color);
+            background-color: var(--secondary);
             color: white;
             border: none;
             border-radius: 4px;
@@ -77,7 +76,7 @@
         }
         
         button:hover {
-            background-color: var(--secondary-color);
+            background-color: #2980b9;
         }
         
         .message {
@@ -100,7 +99,7 @@
             font-style: italic;
         }
         
-        .message img, .message video {
+        .message img {
             max-width: 100%;
             margin-top: 10px;
             border-radius: 4px;
@@ -147,6 +146,12 @@
             background-color: #e74c3c;
             color: white;
         }
+        
+        #current-user {
+            margin: 10px 0;
+            font-weight: bold;
+            color: var(--secondary);
+        }
     </style>
 </head>
 <body>
@@ -161,7 +166,7 @@
         <div id="messages"></div>
         
         <div id="input-area">
-            <input type="text" id="message-input" placeholder="පණිවිඩය ඇතුළත් කරන්න...">
+            <input type="text" id="message-input" placeholder="පණිවිඩය ඇතුළත් කරන්න..." autocomplete="off">
             <button id="send-button">යවන්න</button>
             <button id="photo-button">පින්තූරය</button>
             <input type="file" id="file-input" accept="image/*" style="display: none;">
@@ -173,11 +178,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const socket = io({
-                transports: ['websocket'],
-                reconnectionAttempts: 5
-            });
-            
+            // DOM elements
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
             const photoButton = document.getElementById('photo-button');
@@ -187,32 +188,33 @@
             const currentUserDiv = document.getElementById('current-user');
             const connectionStatus = document.getElementById('connection-status');
             
+            // App state
             let currentUser = '';
+            let users = [];
             
-            // පරිශීලක නාමය ඇතුළත් කිරීම
-            function getUsername() {
-                const storedUser = localStorage.getItem('chat-username');
-                if (storedUser) {
-                    return storedUser;
-                }
-                const username = prompt('ඔබගේ නම ඇතුළත් කරන්න:');
-                if (username) {
-                    localStorage.setItem('chat-username', username);
-                    return username;
-                }
-                return getUsername(); // නමක් ඇතුළත් කරන තෙක් අසන්න
+            // Initialize socket connection
+            const socket = io({
+                transports: ['websocket'],
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+            
+            // Helper functions
+            function formatTime(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString('si-LK', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             }
             
-            // සම්බන්ධතාවයේ තත්වය යාවත්කාලීන කිරීම
-            function updateConnectionStatus(connected) {
-                connectionStatus.textContent = connected ? 'සම්බන්ධ වී ඇත' : 'සම්බන්ධතාවය නැත';
-                connectionStatus.className = connected ? 'connected' : 'disconnected';
-            }
-            
-            // පණිවිඩ පෙන්වීම
             function displayMessage(data) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
+                
+                if (data.user === currentUser) {
+                    messageDiv.classList.add('self');
+                }
                 
                 if (data.type === 'notification') {
                     messageDiv.classList.add('notification');
@@ -221,7 +223,7 @@
                     messageDiv.innerHTML = `
                         <div class="message-header">
                             <span>${data.user}</span>
-                            <span class="message-time">${new Date(data.timestamp).toLocaleTimeString()}</span>
+                            <span class="message-time">${formatTime(data.timestamp)}</span>
                         </div>
                         <img src="${data.image}" alt="පින්තූරය">
                     `;
@@ -229,79 +231,36 @@
                     messageDiv.innerHTML = `
                         <div class="message-header">
                             <span>${data.user}</span>
-                            <span class="message-time">${new Date(data.timestamp).toLocaleTimeString()}</span>
+                            <span class="message-time">${formatTime(data.timestamp)}</span>
                         </div>
                         <div>${data.text}</div>
                     `;
-                }
-                
-                if (data.user === currentUser) {
-                    messageDiv.classList.add('self');
                 }
                 
                 messagesDiv.appendChild(messageDiv);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
             
-            // පරිශීලක ලැයිස්තුව යාවත්කාලීන කිරීම
-            function updateUserList(users) {
-                userListDiv.innerHTML = users.map(user => 
-                    `<li>${user}</li>`
-                ).join('');
+            function getUsername() {
+                const storedUser = localStorage.getItem('chat-username');
+                if (storedUser) return storedUser;
+                
+                let username = prompt('ඔබගේ නම ඇතුළත් කරන්න:') || 'පරිශීලකයා';
+                username = username.trim();
+                
+                if (!username) {
+                    username = 'පරිශීලකයා';
+                }
+                
+                localStorage.setItem('chat-username', username);
+                return username;
             }
             
-            // සම්බන්ධතාවය ආරම්භ කිරීම
-            function init() {
-                currentUser = getUsername();
-                currentUserDiv.textContent = `ඔබ: ${currentUser}`;
-                
-                socket.emit('register', currentUser);
-                
-                // Event listeners
-                sendButton.addEventListener('click', sendMessage);
-                messageInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') sendMessage();
-                });
-                
-                photoButton.addEventListener('click', () => {
-                    fileInput.click();
-                });
-                
-                fileInput.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file && file.type.match('image.*')) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            socket.emit('message', {
-                                type: 'image',
-                                image: event.target.result,
-                                timestamp: new Date().toISOString()
-                            });
-                        };
-                        reader.readAsDataURL(file);
-                        fileInput.value = '';
-                    }
-                });
-                
-                // Socket events
-                socket.on('connect', () => {
-                    updateConnectionStatus(true);
-                    socket.emit('register', currentUser);
-                });
-                
-                socket.on('disconnect', () => {
-                    updateConnectionStatus(false);
-                });
-                
-                socket.on('connect_error', () => {
-                    updateConnectionStatus(false);
-                });
-                
-                socket.on('message', displayMessage);
-                socket.on('user-list', updateUserList);
+            function updateConnectionStatus(connected) {
+                connectionStatus.textContent = connected ? 'සම්බන්ධ වී ඇත' : 'සම්බන්ධතාවය නැත';
+                connectionStatus.className = connected ? 'connected' : 'disconnected';
             }
             
-            // පණිවිඩ යැවීම
             function sendMessage() {
                 const text = messageInput.value.trim();
                 if (text) {
@@ -312,10 +271,73 @@
                     });
                     messageInput.value = '';
                 }
+                messageInput.focus();
             }
             
-            init();
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            photoButton.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        socket.emit('message', {
+                            type: 'image',
+                            image: event.target.result,
+                            timestamp: new Date().toISOString()
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                    fileInput.value = '';
+                }
+            });
+            
+            // Socket event handlers
+            socket.on('connect', () => {
+                updateConnectionStatus(true);
+                currentUser = getUsername();
+                currentUserDiv.textContent = `ඔබ: ${currentUser}`;
+                socket.emit('register', currentUser);
+            });
+            
+            socket.on('disconnect', () => {
+                updateConnectionStatus(false);
+            });
+            
+            socket.on('connect_error', () => {
+                updateConnectionStatus(false);
+            });
+            
+            socket.on('message', displayMessage);
+            
+            socket.on('user-list', (userList) => {
+                users = userList;
+                userListDiv.innerHTML = users.map(user => 
+                    `<li>${user}</li>`
+                ).join('');
+            });
+            
+            socket.on('load-history', (history) => {
+                // Clear existing messages
+                messagesDiv.innerHTML = '';
+                
+                // Load history in reverse order (oldest first)
+                history.reverse().forEach(msg => displayMessage(msg));
+                
+                // Scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+            
+            // Focus input field on load
+            messageInput.focus();
         });
     </script>
 </body>
-    </html>
+</html>
