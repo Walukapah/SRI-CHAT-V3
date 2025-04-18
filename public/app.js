@@ -1,4 +1,10 @@
 // public/app.js
+
+const socket = io({
+      transports: ['websocket'],
+      reconnectionAttempts: 5
+    });
+
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io();
     const messageInput = document.getElementById('message-input');
