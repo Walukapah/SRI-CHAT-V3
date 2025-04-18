@@ -1,4 +1,4 @@
-// server.js
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -6,73 +6,72 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
 
-// ස්ථිතික ගොනු සේවාදායකය
+// Vercel-optimized Socket.IO configuration
+const io = socketIo(server, {
+  transports: ['websocket'],
+  allowUpgrades: false,
+  cors: {
+    origin: process.env.FRONTEND_URL || "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Middleware
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let users = {};
+// API Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Socket.IO Logic
+const users = {};
 
 io.on('connection', (socket) => {
-    console.log('නව පරිශීලකයෙක් සම්බන්ධ විය:', socket.id);
-    
-    // පරිශීලකයා ලියාපදිංචි කිරීම
-    socket.on('register', (username) => {
-        users[socket.id] = username;
-        io.emit('user-list', Object.values(users));
-        socket.broadcast.emit('message', {
-            user: 'පද්ධතිය',
-            text: `${username} චැට් කාමරයට සම්බන්ධ විය`,
-            type: 'notification'
-        });
+  console.log('New user connected:', socket.id);
+
+  socket.on('register', (username) => {
+    users[socket.id] = username;
+    io.emit('user-list', Object.values(users));
+    socket.broadcast.emit('message', {
+      user: 'System',
+      text: `${username} joined the chat`,
+      type: 'notification'
     });
+  });
+
+  socket.on('message', (data) => {
+    if (!users[socket.id]) return;
     
-    // පණිවිඩ ලබා ගැනීම
-    socket.on('message', (data) => {
-        if (data.type === 'text') {
-            io.emit('message', {
-                user: users[socket.id],
-                text: data.text,
-                type: 'text'
-            });
-        } else if (data.type === 'image') {
-            io.emit('message', {
-                user: users[socket.id],
-                image: data.image,
-                type: 'image'
-            });
-        }
-    });
+    const message = {
+      user: users[socket.id],
+      timestamp: new Date().toISOString(),
+      ...data
+    };
     
-    // වීඩියෝ චැට් සංඥා
-    socket.on('video-offer', (offer, to) => {
-        socket.to(to).emit('video-offer', offer, socket.id);
-    });
-    
-    socket.on('video-answer', (answer, to) => {
-        socket.to(to).emit('video-answer', answer);
-    });
-    
-    socket.on('ice-candidate', (candidate, to) => {
-        socket.to(to).emit('ice-candidate', candidate);
-    });
-    
-    // සම්බන්ධතාවය අහිමි වූ විට
-    socket.on('disconnect', () => {
-        const username = users[socket.id];
-        if (username) {
-            delete users[socket.id];
-            io.emit('user-list', Object.values(users));
-            socket.broadcast.emit('message', {
-                user: 'පද්ධතිය',
-                text: `${username} චැට් කාමරය හැර ගියා`,
-                type: 'notification'
-            });
-        }
-    });
+    io.emit('message', message);
+  });
+
+  socket.on('disconnect', () => {
+    const username = users[socket.id];
+    if (username) {
+      delete users[socket.id];
+      io.emit('user-list', Object.values(users));
+      socket.broadcast.emit('message', {
+        user: 'System',
+        text: `${username} left the chat`,
+        type: 'notification'
+      });
+    }
+  });
 });
 
+// Vercel-specific export
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`සර්වරය ${PORT} වෙත සවි කර ඇත`);
+  console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
