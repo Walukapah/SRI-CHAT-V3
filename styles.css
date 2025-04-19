@@ -1,54 +1,137 @@
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
+    background-color: #f5f5f5;
     color: #333;
 }
 
-.app-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+/* Authentication Styles */
+.auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-form h2 {
     text-align: center;
     color: #2c3e50;
     margin-bottom: 20px;
 }
 
-.user-info {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+.form-group {
+    margin-bottom: 15px;
 }
 
-#username-input {
-    flex-grow: 1;
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
 }
 
-#set-username {
-    padding: 10px 15px;
-    background-color: #3498db;
-    color: white;
+button {
+    padding: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
 }
 
-#set-username:hover {
-    background-color: #2980b9;
+#login-button, #register-button {
+    background-color: #2ecc71;
+    color: white;
+    margin-top: 10px;
 }
 
+#login-button:hover, #register-button:hover {
+    background-color: #27ae60;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.auth-switch a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Main App Styles */
+.app-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#username-display {
+    font-weight: bold;
+}
+
+#logout-button {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+}
+
+#logout-button:hover {
+    background-color: #c0392b;
+}
+
+/* Chat Styles */
 #chat-container {
     height: 400px;
     overflow-y: auto;
@@ -65,7 +148,6 @@ h1 {
     border-radius: 15px;
     max-width: 70%;
     word-wrap: break-word;
-    position: relative;
 }
 
 .user-message {
@@ -85,15 +167,19 @@ h1 {
     font-size: 12px;
     color: #666;
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .message-sender {
     font-weight: bold;
     color: #2c3e50;
+    margin-right: 10px;
 }
 
 .message-time {
-    margin-left: 10px;
+    color: #7f8c8d;
+    font-size: 0.8em;
 }
 
 .image-message {
@@ -108,6 +194,7 @@ h1 {
     text-align: center;
 }
 
+/* Input Area */
 #input-area {
     display: flex;
     gap: 10px;
@@ -120,15 +207,6 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 25px;
     font-size: 16px;
-}
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
 }
 
 #send-button {
@@ -158,6 +236,7 @@ button {
     background-color: #8e44ad;
 }
 
+/* Sticker Selector */
 #sticker-selector {
     display: none;
     margin-top: 15px;
@@ -188,7 +267,7 @@ button {
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: transform 0.2s;
 }
 
 .sticker-option:hover {
@@ -196,11 +275,16 @@ button {
     background-color: #f0f0f0;
 }
 
-/* ජංගම උපාංග සඳහා ප්රතිචාරාත්මක වින්යාස */
+/* Responsive Design */
 @media (max-width: 600px) {
+    .auth-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    
     .app-container {
+        margin: 10px;
         padding: 10px;
-        border-radius: 0;
     }
     
     #chat-container {
@@ -208,21 +292,14 @@ button {
     }
     
     #input-area {
-        flex-wrap: wrap;
+        flex-direction: column;
     }
     
     #message-input {
         width: 100%;
-        order: 1;
     }
     
-    #send-button {
-        order: 2;
-        flex-grow: 1;
+    #send-button, #photo-button, #sticker-button {
+        width: 100%;
     }
-    
-    #photo-button, #sticker-button {
-        order: 3;
-        flex-grow: 1;
-    }
-  }
+}
