@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>සරල චැට් යෙදුම</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <h1>සරල චැට් යෙදුම</h1>
+        
+        <div class="user-info">
+            <input type="text" id="username-input" placeholder="ඔබගේ නම ඇතුළත් කරන්න">
+            <button id="set-username">සකසන්න</button>
+        </div>
+        
+        <div id="chat-container"></div>
+        
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="ඔබගේ පණිවුඩය ඇතුළත් කරන්න..." disabled>
+            <button id="send-button" disabled>යවන්න</button>
+            <button id="photo-button">පින්තූරය</button>
+            <button id="sticker-button">ස්ටිකර්</button>
+        </div>
+        
+        <div id="sticker-selector">
+            <h3>ස්ටිකර් තෝරන්න</h3>
+            <div class="sticker-category">
+                <h4>හැඟීම්</h4>
+                <div class="sticker-options">
+                    <div class="sticker-option" data-sticker="😀">😀</div>
+                    <div class="sticker-option" data-sticker="😂">😂</div>
+                    <div class="sticker-option" data-sticker="😍">😍</div>
+                    <div class="sticker-option" data-sticker="😊">😊</div>
+                    <div class="sticker-option" data-sticker="🥲">🥲</div>
+                </div>
+            </div>
+            <div class="sticker-category">
+                <h4>ක්රියා</h4>
+                <div class="sticker-options">
+                    <div class="sticker-option" data-sticker="👍">👍</div>
+                    <div class="sticker-option" data-sticker="👋">👋</div>
+                    <div class="sticker-option" data-sticker="🎉">🎉</div>
+                    <div class="sticker-option" data-sticker="❤️">❤️</div>
+                    <div class="sticker-option" data-sticker="🙏">🙏</div>
+                </div>
+            </div>
+        </div>
+        
+        <input type="file" id="photo-input" accept="image/*" style="display: none;">
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+  </html>
