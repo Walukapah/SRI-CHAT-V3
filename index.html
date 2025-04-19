@@ -3,25 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>සරල චැට් යෙදුම</title>
+    <title>චැට් යෙදුම</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
-        <h1>සරල චැට් යෙදුම</h1>
-        
-        <div class="user-info">
-            <input type="text" id="username-input" placeholder="ඔබගේ නම ඇතුළත් කරන්න">
-            <button id="set-username">සකසන්න</button>
+    <!-- Authentication Container -->
+    <div class="auth-container" id="auth-container">
+        <!-- Login Form -->
+        <div class="auth-form" id="login-form">
+            <h2>ලොගින් වන්න</h2>
+            <div class="form-group">
+                <label for="login-email">ඊමේල් ලිපිනය</label>
+                <input type="email" id="login-email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="login-password">මුරපදය</label>
+                <input type="password" id="login-password" placeholder="මුරපදය">
+            </div>
+            <button id="login-button">ලොගින් වන්න</button>
+            <p class="auth-switch">ගිණුමක් නොමැතිද? <a href="#" id="show-register">ලියාපදිංචි වන්න</a></p>
+            <div id="login-error" class="error-message"></div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="auth-form" id="register-form" style="display: none;">
+            <h2>ලියාපදිංචි වන්න</h2>
+            <div class="form-group">
+                <label for="register-name">නම</label>
+                <input type="text" id="register-name" placeholder="ඔබගේ නම">
+            </div>
+            <div class="form-group">
+                <label for="register-email">ඊමේල් ලිපිනය</label>
+                <input type="email" id="register-email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="register-password">මුරපදය</label>
+                <input type="password" id="register-password" placeholder="අවම අක්ෂර 6">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">මුරපදය තහවුරු කරන්න</label>
+                <input type="password" id="confirm-password" placeholder="මුරපදය නැවත ඇතුළත් කරන්න">
+            </div>
+            <div class="form-group">
+                <label for="register-picture">පැතිකඩ රූපය (විකල්ප)</label>
+                <input type="file" id="register-picture" accept="image/*">
+            </div>
+            <button id="register-button">ලියාපදිංචි වන්න</button>
+            <p class="auth-switch">දැනටමත් ගිණුමක් ඇතිද? <a href="#" id="show-login">ලොගින් වන්න</a></p>
+            <div id="register-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container" id="app-container" style="display: none;">
+        <div class="header">
+            <div class="profile-info">
+                <img id="profile-pic" src="" alt="පැතිකඩ රූපය">
+                <span id="username-display"></span>
+            </div>
+            <button id="logout-button">ලොග් අවුට්</button>
         </div>
         
         <div id="chat-container"></div>
         
         <div id="input-area">
-            <input type="text" id="message-input" placeholder="ඔබගේ පණිවුඩය ඇතුළත් කරන්න..." disabled>
-            <button id="send-button" disabled>යවන්න</button>
+            <input type="text" id="message-input" placeholder="ඔබගේ පණිවුඩය ඇතුළත් කරන්න...">
+            <button id="send-button">යවන්න</button>
             <button id="photo-button">පින්තූරය</button>
             <button id="sticker-button">ස්ටිකර්</button>
+            <input type="file" id="photo-input" accept="image/*" style="display: none;">
         </div>
         
         <div id="sticker-selector">
@@ -33,7 +83,6 @@
                     <div class="sticker-option" data-sticker="😂">😂</div>
                     <div class="sticker-option" data-sticker="😍">😍</div>
                     <div class="sticker-option" data-sticker="😊">😊</div>
-                    <div class="sticker-option" data-sticker="🥲">🥲</div>
                 </div>
             </div>
             <div class="sticker-category">
@@ -41,16 +90,12 @@
                 <div class="sticker-options">
                     <div class="sticker-option" data-sticker="👍">👍</div>
                     <div class="sticker-option" data-sticker="👋">👋</div>
-                    <div class="sticker-option" data-sticker="🎉">🎉</div>
                     <div class="sticker-option" data-sticker="❤️">❤️</div>
-                    <div class="sticker-option" data-sticker="🙏">🙏</div>
                 </div>
             </div>
         </div>
-        
-        <input type="file" id="photo-input" accept="image/*" style="display: none;">
     </div>
-    
+
     <script src="app.js"></script>
 </body>
-  </html>
+</html>
